@@ -1,7 +1,15 @@
 package com.popcornpicks.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
+
 public class UserRegistrationRequest {
+    @Email(message = "must be a well-formed email address")
+    @NotBlank(message = "email is required")
     private String email;
+
+    @NotBlank(message = "password is required")
     private String password;
 
     public UserRegistrationRequest() { }

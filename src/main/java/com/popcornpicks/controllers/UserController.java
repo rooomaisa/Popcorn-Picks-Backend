@@ -11,9 +11,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
+import jakarta.validation.Valid;
+import org.springframework.validation.annotation.Validated;
 import java.util.Optional;
 
+@Validated
 @RestController
 @RequestMapping("/api/v1")
 public class UserController {
@@ -31,7 +33,7 @@ public class UserController {
     /** Register a new user. Returns 201 or 409 if email is taken. */
     @PostMapping("/auth/register")
     public ResponseEntity<UserResponse> register(
-            @RequestBody UserRegistrationRequest registrationRequest) {
+            @Valid @RequestBody UserRegistrationRequest registrationRequest) {
 
         try {
             User toCreate = userMapper.toEntity(registrationRequest);

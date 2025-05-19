@@ -60,6 +60,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
+
+    @ExceptionHandler(DuplicateReviewException.class)
+    protected ResponseEntity<Object> handleDuplicateReview(
+            DuplicateReviewException ex,
+            WebRequest request) {
+
+        Map<String,Object> body = createBody(HttpStatus.CONFLICT, ex.getMessage());
+        return new ResponseEntity<>(body, HttpStatus.CONFLICT);
+    }
+
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleAllOthers(
             Exception ex,

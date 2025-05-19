@@ -30,3 +30,8 @@ INSERT INTO user_roles (user_id, role) VALUES
                                            (1, 'USER'),
                                            (2, 'USER'),
                                            (3, 'ADMIN');
+
+INSERT INTO watchlist_items (user_id, movie_id) VALUES
+                                                    (1,1),
+                                                    (2,2);
+

@@ -37,6 +37,8 @@ public class AuthController {
     public ResponseEntity<AuthResponse> login(
             @Valid @RequestBody AuthRequest authRequest
     ) {
+        System.out.println(">>> AuthController.login() called. Email = " + authRequest.getEmail());
+
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -51,6 +53,7 @@ public class AuthController {
                     ex
             );
         }
+        System.out.println(">>> Authentication succeeded for " + authRequest.getEmail());
 
         UserDetails userDetails = userDetailsService
                 .loadUserByUsername(authRequest.getEmail());

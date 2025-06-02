@@ -22,10 +22,15 @@ public class CustomUserDetailsService implements UserDetailsService {
     /** Load a user by email and map its roles to Spring Authorities */
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+
+        System.out.println(">>> loadUserByUsername() called with email = " + email);
+
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() ->
                         new UsernameNotFoundException("No user found with email: " + email)
                 );
+
+        System.out.println(">>> loadUserByUsername(): found User entity for " + user.getEmail());
 
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),

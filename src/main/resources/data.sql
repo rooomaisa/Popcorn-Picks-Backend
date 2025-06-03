@@ -24,6 +24,9 @@ INSERT INTO users (email, password) VALUES
                                         ('bob@example.com',   '$2b$12$HD0U/3GqMdIWU4kPluVQZOzXFGIMVi4155qhvKJHqRUyLh3AL45Xe'),
                                         ('admin@example.com', '$2b$12$j/IzWPOhAsgCrFwwu.sbMupUPu5TWO2SOEpSuYPeTipVPBqjtfid.');
 
+-- "secret123"
+-- "password"
+-- "adminpass"
 -- ==============================
 -- Seed roles for each user
 -- ==============================

@@ -5,7 +5,9 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
@@ -29,11 +31,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     // 1) Handle Bean Validation errors (@Valid → MethodArgumentNotValidException)
     @Override
+    @NonNull
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex,
-            HttpHeaders headers,
-            HttpStatus status,
-            WebRequest request
+            @NonNull HttpHeaders headers,
+            @NonNull HttpStatusCode status,
+            @NonNull WebRequest request
     ) {
         Map<String, String> fieldErrors = new HashMap<>();
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {

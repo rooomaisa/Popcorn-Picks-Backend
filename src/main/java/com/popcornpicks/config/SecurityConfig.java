@@ -1,46 +1,33 @@
-
 package com.popcornpicks.config;
 
 import com.popcornpicks.filter.JwtRequestFilter;
-import com.popcornpicks.service.CustomUserDetailsService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 
 @Configuration
 public class SecurityConfig {
 
     private final CorsConfigurationSource corsSource;
-    private final CustomUserDetailsService userDetailsService;
+    private final JwtRequestFilter jwtRequestFilter;
 
-    @Autowired
-    public SecurityConfig(
-            CorsConfigurationSource corsSource,
-            CustomUserDetailsService userDetailsService
-    ) {
+    public SecurityConfig(CorsConfigurationSource corsSource,
+                          JwtRequestFilter jwtRequestFilter) {
         this.corsSource = corsSource;
-        this.userDetailsService = userDetailsService;
+        this.jwtRequestFilter = jwtRequestFilter;
     }
 
-    // 1) Expose a BCryptPasswordEncoder bean
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    // 2) Expose the AuthenticationManager from AuthenticationConfiguration
+    // Expose the AuthenticationManager so AuthController can call authenticate(...)
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration authConfig
@@ -48,70 +35,59 @@ public class SecurityConfig {
         return authConfig.getAuthenticationManager();
     }
 
-    // 3) Create a DaoAuthenticationProvider that uses our CustomUserDetailsService + BCrypt
     @Bean
-    public DaoAuthenticationProvider daoAuthenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService);
-        provider.setPasswordEncoder(passwordEncoder());
-        return provider;
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
-    // 4) Define the SecurityFilterChain, registering the DaoAuthenticationProvider
-    @Bean
-    public SecurityFilterChain securityFilterChain(
-            HttpSecurity http,
-            JwtRequestFilter jwtRequestFilter
-    ) throws Exception {
-        http
-                // Register our custom DaoAuthenticationProvider here:
-                .authenticationProvider(daoAuthenticationProvider())
 
-                // Enable CORS
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                // 1) Enable CORS from your CorsConfigurationSource bean
                 .cors(cors -> cors.configurationSource(corsSource))
 
-                // Disable CSRF because we are stateless
+                // 2) Disable CSRF (we’re stateless)
                 .csrf(AbstractHttpConfigurer::disable)
 
-                // No session—every request must be authenticated by JWT or HTTP Basic
+                // 3) No session: every request must carry its own auth token
                 .sessionManagement(sm ->
                         sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
-                // URL‐based authorization rules
+                // 4) Authorization rules
                 .authorizeHttpRequests(auth -> auth
-                        // Unauthenticated users may register or log in:
-                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/register").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
+                        // permit register & login under /api/v1/auth/**
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
 
-                        // Public endpoints:
+                        // anyone can read movies
                         .requestMatchers(HttpMethod.GET, "/api/v1/movies/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/reviews/**").permitAll()
 
-                        // Only ADMIN may create/update/delete movies:
-                        .requestMatchers(HttpMethod.POST,   "/api/v1/movies/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT,    "/api/v1/movies/**").hasRole("ADMIN")
+                        // only ADMIN may POST /api/v1/movies/**
+                        .requestMatchers(HttpMethod.POST, "/api/v1/movies/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT,  "/api/v1/movies/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/movies/**").hasRole("ADMIN")
 
-                        // Authenticated users may post/update/delete reviews and watchlists:
+                        // anyone can GET reviews
+                        .requestMatchers(HttpMethod.GET, "/api/v1/reviews/**").permitAll()
+
+                        // authenticated users can POST/PUT/DELETE reviews & watchlist
                         .requestMatchers(HttpMethod.POST,   "/api/v1/reviews/**").authenticated()
                         .requestMatchers(HttpMethod.PUT,    "/api/v1/reviews/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/reviews/**").authenticated()
+
                         .requestMatchers(HttpMethod.POST,   "/api/v1/users/*/watchlist").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/users/*/watchlist/**").authenticated()
                         .requestMatchers(HttpMethod.GET,    "/api/v1/users/*/watchlist").authenticated()
 
-                        // All other requests require authentication
+                        // everything else requires authentication
                         .anyRequest().authenticated()
                 )
 
-                // Insert our JWT filter before Spring’s UsernamePasswordAuthenticationFilter:
-                .addFilterBefore(jwtRequestFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
-
-                // We will use HTTP Basic to allow testing of /login (it will be overridden once JWT is issued)
-                .httpBasic(Customizer.withDefaults());
+                // 5) Insert our JWT filter *before* Spring’s UsernamePasswordAuthenticationFilter
+                .addFilterBefore(jwtRequestFilter,
+                        org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
-
 }

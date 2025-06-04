@@ -33,32 +33,35 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String path = request.getServletPath();
         System.out.println(">>> JwtRequestFilter.doFilterInternal() on path = " + path);
 
-        // ──────────────────────────────────────────────────────────────────────────
-        // 1) Skip JWT logic entirely for /api/v1/auth/** (register & login):
+        // 1) Skip JWT logic for any /api/v1/auth/** (register & login)
         if (path.startsWith("/api/v1/auth/")) {
             chain.doFilter(request, response);
             return;
         }
-        // ──────────────────────────────────────────────────────────────────────────
 
-        // 2) Otherwise, extract the Bearer token (if present):
+        // 2) Otherwise, look for “Authorization: Bearer <token>”
         final String authHeader = request.getHeader("Authorization");
-        String username = null;
+        System.out.println(">>> JwtRequestFilter Authorization header = " + authHeader);
+
         String jwt = null;
+        String username = null;
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            jwt = authHeader.substring(7); // strip off “Bearer ”
+            jwt = authHeader.substring(7); // strip “Bearer ”
             try {
                 username = jwtUtil.extractUsername(jwt);
+                System.out.println(">>> JwtRequestFilter extractUsername(jwt) = " + username);
             } catch (Exception ex) {
-                // invalid JWT → proceed without setting auth
+                System.out.println(">>> JwtRequestFilter: invalid JWT, skipping auth");
             }
         }
 
-        // 3) If we got a username and no one’s authenticated yet, validate & set Authentication:
+        // 3) If we extracted a username and there is no Authentication yet, validate and set it
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            if (jwtUtil.validateToken(jwt, userDetails)) {
+            boolean valid = jwtUtil.validateToken(jwt, userDetails);
+            System.out.println(">>> JwtRequestFilter validateToken returned = " + valid);
+            if (valid) {
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(
                                 userDetails,
@@ -66,10 +69,17 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                                 userDetails.getAuthorities()
                         );
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+                System.out.println(">>> JwtRequestFilter Authentication granted for " + username);
+            } else {
+                System.out.println(">>> JwtRequestFilter: token invalid or expired");
             }
+        } else if (username == null) {
+            System.out.println(">>> JwtRequestFilter: no Bearer token found, leaving unauthenticated");
         }
 
-        // 4) Continue the filter chain
+        // 4) Continue on to the next filter
         chain.doFilter(request, response);
     }
 }
+
+

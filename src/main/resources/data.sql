@@ -18,15 +18,17 @@ INSERT INTO movie_genres (movie_id, genre) VALUES
 
 -- ==============================
 -- Users (BCrypt‐encoded passwords)
+-- Seed data (passwords are BCrypt‐hashed versions of the values shown here):
+--   alice@example.com  → secret123
+--   bob@example.com    → password
+--   admin@example.com  → adminpass
 -- ==============================
 INSERT INTO users (email, password) VALUES
                                         ('alice@example.com', '$2b$12$G1aCua8AGhtWmu6SuRWYsOON2rtwW7RFy2oMe7hy7k4L5YMrbQCF.'),
                                         ('bob@example.com',   '$2b$12$HD0U/3GqMdIWU4kPluVQZOzXFGIMVi4155qhvKJHqRUyLh3AL45Xe'),
                                         ('admin@example.com', '$2b$12$j/IzWPOhAsgCrFwwu.sbMupUPu5TWO2SOEpSuYPeTipVPBqjtfid.');
 
--- "secret123"
--- "password"
--- "adminpass"
+
 -- ==============================
 -- Seed roles for each user
 -- ==============================
@@ -39,4 +41,16 @@ INSERT INTO user_roles (user_id, role) VALUES
 INSERT INTO watchlist_items (user_id, movie_id) VALUES
                                                     (1,1),
                                                     (2,2);
+
+-- ==============================
+-- Create an “images” table
+-- ==============================
+CREATE TABLE IF NOT EXISTS images (
+                                      id           BIGSERIAL    PRIMARY KEY,
+                                      filename     VARCHAR(255) NOT NULL,
+    content_type VARCHAR(100) NOT NULL,
+    uploaded_by  BIGINT       REFERENCES users(id),
+    uploaded_at  TIMESTAMP    DEFAULT now()
+    );
+
 

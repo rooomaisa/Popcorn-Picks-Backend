@@ -6,7 +6,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -14,7 +16,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-
+@EnableWebSecurity
+@EnableMethodSecurity
 @Configuration
 public class SecurityConfig {
 
@@ -79,6 +82,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,   "/api/v1/users/*/watchlist").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/users/*/watchlist/**").authenticated()
                         .requestMatchers(HttpMethod.GET,    "/api/v1/users/*/watchlist").authenticated()
+
+                        .requestMatchers(HttpMethod.POST,   "/api/v1/files/upload").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET,    "/api/v1/files/**").authenticated()
+
 
                         // everything else requires authentication
                         .anyRequest().authenticated()

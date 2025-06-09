@@ -45,4 +45,25 @@ class MovieServiceImplTest {
         verify(movieRepository, times(1)).findAll(pageable);
     }
 
+    @Test
+    void testSearchByTitle_ReturnsMatchingMovies() {
+        // Arrange
+        String searchTerm = "matrix";
+        Movie movie = new Movie();
+        movie.setTitle("The Matrix");
+        List<Movie> movies = List.of(movie);
+        Pageable pageable = Pageable.unpaged();
+        when(movieRepository.findByTitleContainingIgnoreCase(searchTerm, pageable))
+                .thenReturn(new PageImpl<>(movies));
+
+        // Act
+        var result = movieService.searchByTitle(searchTerm, pageable);
+
+        // Assert
+        assertEquals(1, result.getTotalElements());
+        assertEquals("The Matrix", result.getContent().get(0).getTitle());
+        verify(movieRepository, times(1)).findByTitleContainingIgnoreCase(searchTerm, pageable);
+    }
+
+
 }

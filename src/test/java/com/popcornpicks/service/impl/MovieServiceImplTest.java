@@ -125,6 +125,124 @@ class MovieServiceImplTest {
         verify(movieRepository, times(1)).findById(movieId);
     }
 
+    @Test
+    void testGetMovieById_WhenMovieNotFound_ThrowsException() {
+        // Arrange
+        Long movieId = 999L;
+        when(movieRepository.findById(movieId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        ResourceNotFoundException exception = assertThrows(
+                ResourceNotFoundException.class,
+                () -> movieService.getMovieById(movieId)
+        );
+
+        assertEquals("Movie not found with id 999", exception.getMessage());
+        verify(movieRepository, times(1)).findById(movieId);
+    }
+
+    @Test
+    void testCreateMovie_SetsInitialRatingAndSaves() {
+        // Arrange
+        Movie inputMovie = new Movie();
+        inputMovie.setTitle("Oppenheimer");
+
+        Movie savedMovie = new Movie();
+        savedMovie.setTitle("Oppenheimer");
+        savedMovie.setAverageRating(0.0);
+
+        when(movieRepository.save(inputMovie)).thenReturn(savedMovie);
+
+        // Act
+        Movie result = movieService.createMovie(inputMovie);
+
+        // Assert
+        assertEquals("Oppenheimer", result.getTitle());
+        assertEquals(0.0, result.getAverageRating());
+        verify(movieRepository, times(1)).save(inputMovie);
+    }
+
+    @Test
+    void testUpdateMovie_UpdatesFieldsAndSaves() {
+        // Arrange
+        Long movieId = 1L;
+
+        Movie existingMovie = new Movie();
+        existingMovie.setTitle("Old Title");
+        existingMovie.setYear(2000);
+        existingMovie.setPosterPath("old.jpg");
+        existingMovie.setGenres(List.of("Drama"));
+        existingMovie.setAverageRating(4.2); // stays unchanged
+
+        Movie updatedMovie = new Movie();
+        updatedMovie.setTitle("New Title");
+        updatedMovie.setYear(2024);
+        updatedMovie.setPosterPath("new.jpg");
+        updatedMovie.setGenres(List.of("Sci-Fi"));
+
+        when(movieRepository.findById(movieId)).thenReturn(Optional.of(existingMovie));
+        when(movieRepository.save(existingMovie)).thenReturn(existingMovie);
+
+        // Act
+        Movie result = movieService.updateMovie(movieId, updatedMovie);
+
+        // Assert
+        assertEquals("New Title", result.getTitle());
+        assertEquals(2024, result.getYear());
+        assertEquals("new.jpg", result.getPosterPath());
+        assertEquals(List.of("Sci-Fi"), result.getGenres());
+        assertEquals(4.2, result.getAverageRating()); // stays the same
+
+        verify(movieRepository, times(1)).findById(movieId);
+        verify(movieRepository, times(1)).save(existingMovie);
+    }
+
+    @Test
+    void testDeleteMovie_RemovesMovie() {
+        // Arrange
+        Long movieId = 1L;
+        Movie existingMovie = new Movie();
+        existingMovie.setTitle("To Delete");
+
+        when(movieRepository.findById(movieId)).thenReturn(Optional.of(existingMovie));
+
+        // Act
+        movieService.deleteMovie(movieId);
+
+        // Assert
+        verify(movieRepository, times(1)).findById(movieId);
+        verify(movieRepository, times(1)).delete(existingMovie);
+    }
+
+    @Test
+    void testGetMoviesAboveRating_ReturnsMatchingMovies() {
+        // Arrange
+        double ratingThreshold = 4.0;
+        Movie movie = new Movie();
+        movie.setTitle("Inception");
+        movie.setAverageRating(4.8);
+
+        List<Movie> movies = List.of(movie);
+        Pageable pageable = Pageable.unpaged();
+
+        when(movieRepository.findByAverageRatingGreaterThan(ratingThreshold, pageable))
+                .thenReturn(new PageImpl<>(movies));
+
+        // Act
+        var result = movieService.getMoviesAboveRating(ratingThreshold, pageable);
+
+        // Assert
+        assertEquals(1, result.getTotalElements());
+        assertEquals("Inception", result.getContent().get(0).getTitle());
+        assertTrue(result.getContent().get(0).getAverageRating() > 4.0);
+        verify(movieRepository, times(1)).findByAverageRatingGreaterThan(ratingThreshold, pageable);
+    }
+
+
+
+
+
+
 
 
 

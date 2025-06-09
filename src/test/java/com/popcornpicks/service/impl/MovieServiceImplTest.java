@@ -65,5 +65,27 @@ class MovieServiceImplTest {
         verify(movieRepository, times(1)).findByTitleContainingIgnoreCase(searchTerm, pageable);
     }
 
+    @Test
+    void testFilterByGenre_ReturnsFilteredMovies() {
+        // Arrange
+        String genre = "Action";
+        Movie movie = new Movie();
+        movie.setTitle("Mad Max");
+        movie.setGenres(List.of("Action"));
+        List<Movie> movies = List.of(movie);
+        Pageable pageable = Pageable.unpaged();
+        when(movieRepository.findByGenresContaining(genre, pageable))
+                .thenReturn(new PageImpl<>(movies));
+
+        // Act
+        var result = movieService.filterByGenre(genre, pageable);
+
+        // Assert
+        assertEquals(1, result.getTotalElements());
+        assertEquals("Mad Max", result.getContent().get(0).getTitle());
+        verify(movieRepository, times(1)).findByGenresContaining(genre, pageable);
+    }
+
+
 
 }

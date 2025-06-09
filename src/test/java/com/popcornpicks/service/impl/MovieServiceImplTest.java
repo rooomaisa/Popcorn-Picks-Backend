@@ -10,6 +10,7 @@ import org.mockito.Mockito;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -238,13 +239,46 @@ class MovieServiceImplTest {
         verify(movieRepository, times(1)).findByAverageRatingGreaterThan(ratingThreshold, pageable);
     }
 
+    @Test
+    void testGetMoviesCreatedAfter_ReturnsRecentMovies() {
+        // Arrange
+        LocalDateTime since = LocalDateTime.now().minusDays(7);
+        Movie movie = new Movie();
+        movie.setTitle("New Release");
 
+        List<Movie> movies = List.of(movie);
+        Pageable pageable = Pageable.unpaged();
 
+        when(movieRepository.findByCreatedAtAfter(since, pageable))
+                .thenReturn(new PageImpl<>(movies));
 
+        // Act
+        var result = movieService.getMoviesCreatedAfter(since, pageable);
 
+        // Assert
+        assertEquals(1, result.getTotalElements());
+        assertEquals("New Release", result.getContent().get(0).getTitle());
+        verify(movieRepository, times(1)).findByCreatedAtAfter(since, pageable);
+    }
 
+    @Test
+    void testGetMoviesOrderedByDate_ReturnsSortedMovies() {
+        // Arrange
+        Movie movie = new Movie();
+        movie.setTitle("Latest Movie");
+        Pageable pageable = Pageable.unpaged();
 
+        when(movieRepository.findAllByOrderByCreatedAtDesc(pageable))
+                .thenReturn(new PageImpl<>(List.of(movie)));
 
+        // Act
+        var result = movieService.getMoviesOrderedByDate(pageable);
+
+        // Assert
+        assertEquals(1, result.getTotalElements());
+        assertEquals("Latest Movie", result.getContent().get(0).getTitle());
+        verify(movieRepository, times(1)).findAllByOrderByCreatedAtDesc(pageable);
+    }
 
 
 }

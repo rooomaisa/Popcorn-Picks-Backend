@@ -107,6 +107,25 @@ class MovieServiceImplTest {
         verify(movieRepository, times(1)).findByYear(year, pageable);
     }
 
+    @Test
+    void testGetMovieById_WhenMovieExists_ReturnsMovie() {
+        // Arrange
+        Long movieId = 1L;
+        Movie movie = new Movie();
+        movie.setTitle("Interstellar");
+
+        when(movieRepository.findById(movieId)).thenReturn(Optional.of(movie));
+
+        // Act
+        Movie result = movieService.getMovieById(movieId);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("Interstellar", result.getTitle());
+        verify(movieRepository, times(1)).findById(movieId);
+    }
+
+
 
 
 

@@ -86,6 +86,28 @@ class MovieServiceImplTest {
         verify(movieRepository, times(1)).findByGenresContaining(genre, pageable);
     }
 
+    @Test
+    void testFilterByYear_ReturnsMoviesFromThatYear() {
+        // Arrange
+        int year = 1999;
+        Movie movie = new Movie();
+        movie.setTitle("Fight Club");
+        movie.setYear(year);
+        List<Movie> movies = List.of(movie);
+        Pageable pageable = Pageable.unpaged();
+        when(movieRepository.findByYear(year, pageable))
+                .thenReturn(new PageImpl<>(movies));
+
+        // Act
+        var result = movieService.filterByYear(year, pageable);
+
+        // Assert
+        assertEquals(1, result.getTotalElements());
+        assertEquals(1999, result.getContent().get(0).getYear());
+        verify(movieRepository, times(1)).findByYear(year, pageable);
+    }
+
+
 
 
 }

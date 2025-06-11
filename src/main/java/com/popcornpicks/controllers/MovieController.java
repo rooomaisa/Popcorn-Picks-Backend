@@ -1,17 +1,22 @@
 package com.popcornpicks.controllers;
-
 import com.popcornpicks.dto.MovieRequest;
 import com.popcornpicks.dto.MovieResponse;
 import com.popcornpicks.mapper.MovieMapper;
 import com.popcornpicks.models.Movie;
 import com.popcornpicks.service.MovieService;
-import jakarta.validation.Valid;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import java.time.LocalDateTime;
+
+
+
+
 
 @RestController
 @RequestMapping("/api/v1/movies")
@@ -47,6 +52,28 @@ public class MovieController {
             page = movieService.getAllMovies(pageable);
         }
         return page.map(movieMapper::toDto);
+    }
+
+    @GetMapping("/order-by-date")
+    @PreAuthorize("hasRole('ADMIN')")
+    public Page<MovieResponse> getMoviesOrderedByDate(Pageable pageable) {
+        return movieService.getMoviesOrderedByDate(pageable)
+                .map(movieMapper::toDto);
+    }
+
+    @GetMapping("/above-rating")
+    @PreAuthorize("hasRole('ADMIN')")
+    public Page<MovieResponse> getMoviesAboveRating(@RequestParam double rating, Pageable pageable) {
+        return movieService.getMoviesAboveRating(rating, pageable)
+                .map(movieMapper::toDto);
+    }
+
+    @GetMapping("/created-after")
+    @PreAuthorize("hasRole('ADMIN')")
+    public Page<MovieResponse> getMoviesCreatedAfter(@RequestParam String timestamp, Pageable pageable) {
+        LocalDateTime dateTime = LocalDateTime.parse(timestamp);
+        return movieService.getMoviesCreatedAfter(dateTime, pageable)
+                .map(movieMapper::toDto);
     }
 
     /** Fetch a single movie by ID */
@@ -87,3 +114,5 @@ public class MovieController {
         movieService.deleteMovie(id);
     }
 }
+
+

@@ -64,5 +64,14 @@ public class User {
     public void setRoles(Set<String> roles) {
         this.roles = roles;
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+
+
+
+
 }
 

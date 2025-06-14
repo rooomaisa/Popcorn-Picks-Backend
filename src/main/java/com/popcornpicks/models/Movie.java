@@ -72,6 +72,9 @@ public class Movie {
     }
 
     // Setters
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     // No setter for id or createdAt
 
@@ -90,4 +93,6 @@ public class Movie {
     public void setGenres(List<String> genres) {
         this.genres = genres;
     }
+
+
 }

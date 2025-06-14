@@ -68,6 +68,9 @@ public class Review {
     }
 
     // Setters
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     // No setter for id or createdAt
 

@@ -111,6 +111,14 @@ public class ReviewServiceImpl implements ReviewService {
         return reviewRepository.findByUserId(userId, pageable);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Review getReviewById(Long reviewId) {
+        return reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ResourceNotFoundException("Review not found with id " + reviewId));
+    }
+
+
     /** Helper to recalculate a movie’s averageRating */
     private void recalcAverageRating(Long movieId) {
         List<Review> reviews = reviewRepository.findByMovieId(movieId);

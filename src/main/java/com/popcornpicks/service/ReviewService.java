@@ -17,6 +17,8 @@ public interface ReviewService {
     /** Delete a review and recalculate averageRating */
     void deleteReview(Long reviewId);
 
+    Review getReviewById(Long id);
+
     /** List reviews for a specific movie */
     Page<Review> getReviewsByMovie(Long movieId, Pageable pageable);
 

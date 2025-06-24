@@ -40,14 +40,14 @@ public class WatchlistServiceImpl implements WatchlistService {
         Movie movie = movieRepo.findById(movieId)
                 .orElseThrow(() -> new ResourceNotFoundException("Movie not found: " + movieId));
 
-        // if already exists, return it (no duplicate)
+
         return watchlistRepo.findByUserIdAndMovieId(userId, movieId)
                 .orElseGet(() -> watchlistRepo.save(new WatchlistItem(user, movie)));
     }
 
     @Override
     public void removeFromWatchlist(Long userId, Long movieId) {
-        // deleteByUserIdAndMovieId does nothing if no match
+
         watchlistRepo.deleteByUserIdAndMovieId(userId, movieId);
     }
 

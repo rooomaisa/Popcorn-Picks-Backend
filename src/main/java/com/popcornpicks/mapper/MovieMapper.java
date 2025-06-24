@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MovieMapper {
 
-    /** Turn a create/update request into an Entity */
+
     public Movie toEntity(MovieRequest req) {
         return new Movie(
                 req.getTitle(),
@@ -18,7 +18,7 @@ public class MovieMapper {
         );
     }
 
-    /** Turn an Entity into the API response format */
+
     public MovieResponse toDto(Movie movie) {
         return new MovieResponse(
                 movie.getId(),

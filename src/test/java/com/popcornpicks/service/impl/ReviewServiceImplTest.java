@@ -86,14 +86,14 @@ class ReviewServiceImplTest {
 
     @Test
     void testCreateReview_MovieNotFound() {
-        // 1) Stub the user lookup so we pass the rating‐validation and user‐lookup phases:
+
         when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
-        // 2) Stub the movie lookup to be empty:
+
         when(movieRepository.findById(MOVIE_ID)).thenReturn(Optional.empty());
 
-        // 3) Expect YOUR ResourceNotFoundException, not JPA’s:
+
         ResourceNotFoundException ex = assertThrows(
-                ResourceNotFoundException.class,            // ← your exception type
+                ResourceNotFoundException.class,
                 () -> reviewService.createReview(USER_ID, MOVIE_ID, 3, "Nice")
         );
         assertTrue(ex.getMessage().contains("Movie not found with id " + MOVIE_ID));
@@ -112,10 +112,10 @@ class ReviewServiceImplTest {
 
     @Test
     void testGetReviewById_NotFound() {
-        // stub the repo to return empty
+
         when(reviewRepository.findById(REVIEW_ID)).thenReturn(Optional.empty());
 
-        // expect your ResourceNotFoundException
+
         ResourceNotFoundException ex = assertThrows(
                 ResourceNotFoundException.class,
                 () -> reviewService.getReviewById(REVIEW_ID)
@@ -138,10 +138,10 @@ class ReviewServiceImplTest {
 
     @Test
     void testDeleteReview_Success() {
-        // 1) find the review
+
         when(reviewRepository.findById(REVIEW_ID))
                 .thenReturn(Optional.of(existingReview));
-        // 2) recalc stubs:
+
         when(reviewRepository.findByMovieId(MOVIE_ID))
                 .thenReturn(List.of(existingReview));
         when(movieRepository.findById(MOVIE_ID))
@@ -149,7 +149,7 @@ class ReviewServiceImplTest {
         when(movieRepository.save(movie))
                 .thenReturn(movie);
 
-        // Act & Assert no exception
+
         assertDoesNotThrow(() -> reviewService.deleteReview(REVIEW_ID));
 
         verify(reviewRepository).delete(existingReview);
@@ -208,7 +208,7 @@ class ReviewServiceImplTest {
         assertTrue(ex.getMessage().contains("Review already exists for user " + USER_ID));
     }
 
-    // ─── UPDATE REVIEW ─────────────────────────────────────────────────────────
+
 
     @Test
     void testUpdateReview_Success() {
@@ -216,7 +216,7 @@ class ReviewServiceImplTest {
                 .thenReturn(Optional.of(existingReview));
         when(reviewRepository.save(existingReview))
                 .thenReturn(existingReview);
-        // stub the recalcAverageRating path
+
         when(reviewRepository.findByMovieId(MOVIE_ID))
                 .thenReturn(List.of(existingReview));
         when(movieRepository.findById(MOVIE_ID))
@@ -246,7 +246,7 @@ class ReviewServiceImplTest {
         );
     }
 
-    // ─── GET REVIEWS BY MOVIE ─────────────────────────────────────────────────
+
 
     @Test
     void testGetReviewsByMovie_NotFound() {
@@ -271,7 +271,7 @@ class ReviewServiceImplTest {
         verify(reviewRepository).findByMovieId(MOVIE_ID, Pageable.unpaged());
     }
 
-    // ─── GET REVIEWS BY USER ──────────────────────────────────────────────────
+
 
     @Test
     void testGetReviewsByUser_NotFound() {

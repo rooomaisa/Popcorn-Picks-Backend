@@ -38,29 +38,29 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public Review createReview(Long userId, Long movieId, int rating, String comment) {
-        // 1. Validate rating
+
         if (rating < 1 || rating > 5) {
             throw new IllegalArgumentException("Rating must be between 1 and 5");
         }
 
-        // 2. Load user & movie
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + userId));
         Movie movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new ResourceNotFoundException("Movie not found with id " + movieId));
 
-        // 3. Enforce one review per user/movie
+
         if (reviewRepository.findByUserIdAndMovieId(userId, movieId).isPresent()) {
             throw new DuplicateReviewException(
                     "Review already exists for user " + userId + " and movie " + movieId
             );
         }
 
-        // 4. Save review
+
         Review review = new Review(rating, comment, user, movie);
         Review saved = reviewRepository.save(review);
 
-        // 5. Recalculate and persist averageRating
+
         recalcAverageRating(movieId);
 
         return saved;
@@ -119,7 +119,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
 
-    /** Helper to recalculate a movie’s averageRating */
+
     private void recalcAverageRating(Long movieId) {
         List<Review> reviews = reviewRepository.findByMovieId(movieId);
         double avg = reviews.stream()

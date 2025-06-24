@@ -10,10 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ReviewMapper {
 
-    /**
-     * Build a Review entity from the incoming request.
-     * Note: user and movie references will be set in the service layer.
-     */
+
     public Review toEntity(ReviewRequest req, User user, Movie movie) {
         Review review = new Review();
         review.setUser(user);
@@ -23,7 +20,7 @@ public class ReviewMapper {
         return review;
     }
 
-    /** Convert a Review entity to the API response DTO */
+
     public ReviewResponse toDto(Review review) {
         return new ReviewResponse(
                 review.getId(),

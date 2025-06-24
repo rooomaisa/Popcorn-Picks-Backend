@@ -31,9 +31,7 @@ public class MovieController {
         this.movieMapper = movieMapper;
     }
 
-    /** List or filter movies:
-     *  ?title=…   or ?genre=…   or ?year=…
-     */
+
     @GetMapping
     public Page<MovieResponse> list(
             @RequestParam(required = false) String title,
@@ -76,14 +74,14 @@ public class MovieController {
                 .map(movieMapper::toDto);
     }
 
-    /** Fetch a single movie by ID */
+
     @GetMapping("/{id}")
     public MovieResponse getById(@PathVariable Long id) {
         Movie movie = movieService.getMovieById(id);
         return movieMapper.toDto(movie);
     }
 
-    /** Create a new movie (Admin later) */
+
     @PostMapping
     public ResponseEntity<MovieResponse> create(
             @Valid @RequestBody MovieRequest request
@@ -96,7 +94,7 @@ public class MovieController {
         );
     }
 
-    /** Update an existing movie (Admin later) */
+
     @PutMapping("/{id}")
     public MovieResponse update(
             @PathVariable Long id,
@@ -107,7 +105,7 @@ public class MovieController {
         return movieMapper.toDto(updated);
     }
 
-    /** Delete a movie by ID (Admin later) */
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {

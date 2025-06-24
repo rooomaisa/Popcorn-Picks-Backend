@@ -33,13 +33,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String path = request.getServletPath();
         System.out.println(">>> JwtRequestFilter.doFilterInternal() on path = " + path);
 
-        // 1) Skip JWT logic for any /api/v1/auth/** (register & login)
+
         if (path.startsWith("/api/v1/auth/")) {
             chain.doFilter(request, response);
             return;
         }
 
-        // 2) Otherwise, look for “Authorization: Bearer <token>”
+
         final String authHeader = request.getHeader("Authorization");
         System.out.println(">>> JwtRequestFilter Authorization header = " + authHeader);
 
@@ -47,7 +47,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String username = null;
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            jwt = authHeader.substring(7); // strip “Bearer ”
+            jwt = authHeader.substring(7);
             try {
                 username = jwtUtil.extractUsername(jwt);
                 System.out.println(">>> JwtRequestFilter extractUsername(jwt) = " + username);
@@ -56,7 +56,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
         }
 
-        // 3) If we extracted a username and there is no Authentication yet, validate and set it
+
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             boolean valid = jwtUtil.validateToken(jwt, userDetails);
@@ -77,7 +77,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             System.out.println(">>> JwtRequestFilter: no Bearer token found, leaving unauthenticated");
         }
 
-        // 4) Continue on to the next filter
+
         chain.doFilter(request, response);
     }
 }

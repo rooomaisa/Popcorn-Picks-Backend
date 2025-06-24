@@ -53,7 +53,7 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public Movie createMovie(Movie movie) {
-        // ensure initial rating is zero
+
         movie.setAverageRating(0.0);
         return movieRepository.save(movie);
     }
@@ -65,7 +65,7 @@ public class MovieServiceImpl implements MovieService {
         existing.setYear(updated.getYear());
         existing.setPosterPath(updated.getPosterPath());
         existing.setGenres(updated.getGenres());
-        // averageRating and createdAt remain unchanged
+
         return movieRepository.save(existing);
     }
 

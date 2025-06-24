@@ -44,10 +44,10 @@ public class Movie {
         this.posterPath = posterPath;
         this.genres = genres;
         this.averageRating = 0.0;
-        // createdAt is set automatically
+
     }
 
-    // Getters
+
 
     public Long getId() {
         return id;
@@ -71,12 +71,12 @@ public class Movie {
         return createdAt;
     }
 
-    // Setters
+
     public void setId(Long id) {
         this.id = id;
     }
 
-    // No setter for id or createdAt
+
 
     public void setTitle(String title) {
         this.title = title;

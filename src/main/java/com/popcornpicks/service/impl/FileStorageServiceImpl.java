@@ -32,10 +32,10 @@ public class FileStorageServiceImpl implements FileStorageService {
 
     @Override
     public String storeFile(MultipartFile file) {
-        // 1) Clean up the original filename
+
         String originalFilename = StringUtils.cleanPath(file.getOriginalFilename());
 
-        // 2) Compute a unique filename (so we never overwrite)
+
         String extension = "";
         int dotIndex = originalFilename.lastIndexOf('.');
         if (dotIndex > 0) {
@@ -44,7 +44,7 @@ public class FileStorageServiceImpl implements FileStorageService {
         String storedFilename = UUID.randomUUID().toString() + extension;
 
         try {
-            // 3) Copy the data to our upload dir
+
             Path targetLocation = this.uploadDir.resolve(storedFilename);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
             return storedFilename;

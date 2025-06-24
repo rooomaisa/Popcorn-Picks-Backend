@@ -11,12 +11,12 @@ import java.time.LocalDateTime;
 @Repository
 public interface MovieRepository extends JpaRepository<Movie, Long> {
 
-    // --- User queries ---
+
     Page<Movie> findByTitleContainingIgnoreCase(String title, Pageable pageable);
     Page<Movie> findByGenresContaining(String genre, Pageable pageable);
     Page<Movie> findByYear(int year, Pageable pageable);
 
-    // --- Admin / advanced queries ---
+
 
     Page<Movie> findByAverageRatingGreaterThan(double rating, Pageable pageable);
     Page<Movie> findByCreatedAtAfter(LocalDateTime dateTime, Pageable pageable);

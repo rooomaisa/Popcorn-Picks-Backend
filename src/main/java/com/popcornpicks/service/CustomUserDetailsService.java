@@ -19,7 +19,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
-    /** Load a user by email and map its roles to Spring Authorities */
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 

@@ -39,19 +39,19 @@ public class ReviewController {
         this.reviewMapper = reviewMapper;
     }
 
-    /** Create a new review */
+
     @PostMapping
     public ResponseEntity<ReviewResponse> create(
             @Valid @RequestBody ReviewRequest request
     ) {
-        // Load entities
+
         User user = userService.findById(request.getUserId())
                 .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
                 );
         Movie movie = movieService.getMovieById(request.getMovieId());
 
-        // Delegate to service
+
         Review created = reviewService.createReview(
                 user.getId(), movie.getId(),
                 request.getRating(), request.getComment()
@@ -63,7 +63,7 @@ public class ReviewController {
         );
     }
 
-    /** Update an existing review */
+
     @PutMapping("/{id}")
     public ReviewResponse update(
             @PathVariable Long id,
@@ -75,14 +75,14 @@ public class ReviewController {
         return reviewMapper.toDto(updated);
     }
 
-    /** Delete a review */
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         reviewService.deleteReview(id);
     }
 
-    /** List reviews by movie or by user */
+
     @GetMapping
     public Page<ReviewResponse> list(
             @RequestParam(required = false) Long movieId,

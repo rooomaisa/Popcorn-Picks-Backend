@@ -42,18 +42,18 @@ class MovieControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        // 1) wipe any leftover data
+
         movieRepository.deleteAll();
 
-        // 2) insert exactly one Movie
+
         Movie movie = new Movie();
         movie.setTitle("Test Movie");
         movie.setYear(2024);
         movie.setPosterPath("test.jpg");
         movie.setAverageRating(0.0);
-        movie.setGenres(List.of("Drama"));  // adjust genres as needed
+        movie.setGenres(List.of("Drama"));
 
-        // 3) save & stash its ID for use in your tests
+
         testMovieId = movieRepository.save(movie).getId();
     }
 
@@ -183,9 +183,7 @@ class MovieControllerIntegrationTest {
                 .andExpect(jsonPath("$.year").value(1999));
     }
 
-    // ————————————————————————————
-    // UPDATE (PUT) ➞ only ADMIN
-    // ————————————————————————————
+
     @Test
     @WithMockUser(roles = "ADMIN")
     void testUpdateMovie_AsAdmin_Returns200() throws Exception {
@@ -208,7 +206,7 @@ class MovieControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser    // no roles ⇒ forbidden
+    @WithMockUser
     void testUpdateMovie_AsUser_Returns403() throws Exception {
         String updateJson = "{\"title\":\"X\"}";
 
@@ -219,9 +217,7 @@ class MovieControllerIntegrationTest {
                 .andExpect(status().isForbidden());
     }
 
-    // ————————————————————————————
-    // DELETE ➞ only ADMIN
-    // ————————————————————————————
+
     @Test
     @WithMockUser(roles = "ADMIN")
     void testDeleteMovie_AsAdmin_Returns204() throws Exception {
@@ -231,16 +227,14 @@ class MovieControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser    // no roles ⇒ forbidden
+    @WithMockUser
     void testDeleteMovie_AsUser_Returns403() throws Exception {
         mockMvc.perform(delete("/api/v1/movies/" + testMovieId)
                         .with(csrf()))
                 .andExpect(status().isForbidden());
     }
 
-    // ————————————————————————————
-    // VALIDATION ERRORS
-    // ————————————————————————————
+
     @Test
     @WithMockUser(roles = "ADMIN")
     void testCreateMovie_BadPayload_Returns400() throws Exception {

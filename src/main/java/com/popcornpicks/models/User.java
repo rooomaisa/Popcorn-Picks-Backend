@@ -4,6 +4,8 @@ package com.popcornpicks.models;
 import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
+import java.time.LocalDateTime;
+
 
 @Entity
 @Table(name = "users")
@@ -18,6 +20,9 @@ public class User {
 
     @Column(nullable = false)
     private String password;
+
+//    @Column(name = "created_at", nullable = false)
+//    private LocalDateTime createdAt;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
@@ -39,7 +44,7 @@ public class User {
         return id;
     }
 
-    // No setter for id to keep it immutable after creation
+
 
     public String getEmail() {
         return email;

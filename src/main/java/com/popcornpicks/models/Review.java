@@ -46,7 +46,7 @@ public class Review {
         this.movie = movie;
     }
 
-    // Getters
+
 
     public Long getId() {
         return id;
@@ -67,12 +67,12 @@ public class Review {
         return createdAt;
     }
 
-    // Setters
+
     public void setId(Long id) {
         this.id = id;
     }
 
-    // No setter for id or createdAt
+
 
     public void setRating(int rating) {
         this.rating = rating;

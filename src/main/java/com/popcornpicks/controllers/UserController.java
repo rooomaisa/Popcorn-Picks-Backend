@@ -30,7 +30,7 @@ public class UserController {
         this.userMapper = userMapper;
     }
 
-    /** Register a new user. Returns 201 or 409 if email is taken. */
+
     @PostMapping("/auth/register")
     public ResponseEntity<UserResponse> register(
             @Valid @RequestBody UserRegistrationRequest registrationRequest) {
@@ -42,14 +42,14 @@ public class UserController {
             return new ResponseEntity<>(response, HttpStatus.CREATED);
 
         } catch (EmailAlreadyExistsException ex) {
-            // Convert our service exception into a 409 response
+
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT, ex.getMessage(), ex
             );
         }
     }
 
-    /** Retrieve a user by their ID. Returns 200 or 404 if not found. */
+
     @GetMapping("/users/{id}")
     public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
         Optional<User> userOpt = userService.findById(id);

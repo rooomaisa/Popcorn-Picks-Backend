@@ -26,7 +26,7 @@ public class WatchlistController {
         this.mapper  = mapper;
     }
 
-    /** Add a movie to the watchlist */
+
     @PostMapping
     public ResponseEntity<WatchlistResponse> add(
             @PathVariable Long userId,
@@ -36,7 +36,7 @@ public class WatchlistController {
         return new ResponseEntity<>(mapper.toDto(item), HttpStatus.CREATED);
     }
 
-    /** Remove a movie from watchlist */
+
     @DeleteMapping("/{movieId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void remove(
@@ -46,7 +46,7 @@ public class WatchlistController {
         service.removeFromWatchlist(userId, movieId);
     }
 
-    /** List watchlist items for a user */
+
     @GetMapping
     public PageResponse<WatchlistResponse> list(
             @PathVariable Long userId,

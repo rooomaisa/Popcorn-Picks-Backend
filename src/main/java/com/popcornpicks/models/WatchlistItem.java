@@ -38,7 +38,7 @@ public class WatchlistItem {
         this.movie = movie;
     }
 
-    // Getters
+
 
     public Long getId() {
         return id;
@@ -53,9 +53,9 @@ public class WatchlistItem {
         return addedAt;
     }
 
-    // Setters
 
-    // no setter for id or addedAt
+
+
 
     public void setUser(User user) {
         this.user = user;

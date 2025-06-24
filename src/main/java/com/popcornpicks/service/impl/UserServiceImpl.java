@@ -16,7 +16,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    // Inject both UserRepository and PasswordEncoder
+
     public UserServiceImpl(
             UserRepository userRepository,
             PasswordEncoder passwordEncoder
@@ -32,12 +32,12 @@ public class UserServiceImpl implements UserService {
                     "Email already in use: " + user.getEmail()
             );
         }
-        // 1) Hash the raw password before saving:
+
         String rawPassword = user.getPassword();
         String hashed     = passwordEncoder.encode(rawPassword);
         user.setPassword(hashed);
 
-        // 2) Now save the user with the BCrypt‐encoded password:
+
         return userRepository.save(user);
     }
 

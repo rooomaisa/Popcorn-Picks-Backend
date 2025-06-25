@@ -74,9 +74,7 @@ public class User {
         this.id = id;
     }
 
-
-
-
-
+    public void setUsername(String testuser) {
+    }
 }
 

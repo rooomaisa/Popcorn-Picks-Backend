@@ -1,6 +1,7 @@
 package com.popcornpicks.controllers;
 
 import com.popcornpicks.dto.ReviewRequest;
+import com.popcornpicks.dto.ReviewUpdateRequest;
 import com.popcornpicks.dto.ReviewResponse;
 import com.popcornpicks.mapper.ReviewMapper;
 import com.popcornpicks.models.Movie;
@@ -63,14 +64,15 @@ public class ReviewController {
         );
     }
 
-
     @PutMapping("/{id}")
     public ReviewResponse update(
             @PathVariable Long id,
-            @Valid @RequestBody ReviewRequest request
+            @Valid @RequestBody ReviewUpdateRequest request   // ← change here
     ) {
         Review updated = reviewService.updateReview(
-                id, request.getRating(), request.getComment()
+                id,
+                request.getRating(),    // ← extract only rating
+                request.getComment()    // ← extract only comment
         );
         return reviewMapper.toDto(updated);
     }
